@@ -1,0 +1,10 @@
+# Abaikan SEMUA folder environment
+**/venv/
+**/dbt-env/
+**/env/
+**/*env/
+
+# Abaikan folder dbt
+target/
+logs/
+dbt_packages/

@@ -1,0 +1,61 @@
+Fasa 1: Persediaan di Databricks (Ambil Kunci)
+Sebelum buka VS Code, pastikan kau ada 3 benda ni:
+Server Hostname: (Dari SQL Warehouse > Connection Details).
+HTTP Path: (Dari SQL Warehouse > Connection Details).
+Token: (Generate baru, klik butang Copy. Pastikan mula dengan dapi..., TIADA huruf 'T' kat depan).
+
+Fasa 2: Setup Folder & Python (Laptop Rumah)
+Buka Terminal (PowerShell) dan buat langkah ni:
+# 1. Buat folder utama (Jangan namakan 'dbt' sahaja untuk elak konflik)
+mkdir dbt_projects
+cd dbt_projects
+
+# 2. Buat Virtual Environment
+python -m venv dbt-env
+
+# 3. Activate Environment
+.\dbt-env\Scripts\Activate.ps1
+
+# 4. Install Library dbt-databricks
+pip install dbt-databricks
+
+
+Fasa 3: Setup "Kunci" (profiles.yml)
+Ini langkah paling kritikal. Fail ni MESTI duduk dalam folder User kau, bukan folder projek.
+Pergi ke: C:\Users\NAMA_USER_KAU\
+Buat folder baru bernama .dbt (kalau belum ada).
+Dalam folder .dbt, buat fail bernama profiles.yml.
+Paste kod "Suci" ni:
+
+gold_practice_1: # <--- Mesti sama dengan nama dbt_project.yml nanti
+  target: dev
+  outputs:
+    dev:
+      type: databricks
+      host: "dbc-xxxxxxxx.cloud.databricks.com" # Masukkan host kau
+      http_path: "/sql/1.0/warehouses/xxxxxx"  # Masukkan path kau
+      token: "dapi_KAU_YANG_BETUL"              # Pastikan mula dapi...
+      auth_type: token
+      catalog: main
+      schema: gold_practice_schema
+      threads: 4
+
+
+Fasa 4: Link-kan Projek dbt
+Balik ke Terminal VS Code (dalam folder dbt_projects):
+
+# 1. Init projek baru (Ikut nama dlm profile tadi)
+dbt init gold_practice_1
+
+# 2. Masuk folder projek
+cd gold_practice_1
+
+# 3. Check link dalam dbt_project.yml
+# Buka fail dbt_project.yml, pastikan baris 'profile:' tertulis:
+# profile: 'gold_practice_1'
+
+
+Fasa 5: Ujian "The Moment of Truth"
+Dalam terminal yang dah activated (dbt-env), run:
+
+dbt debug
